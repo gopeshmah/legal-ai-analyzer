@@ -1,14 +1,23 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import UploadZone from '../components/UploadZone';
+import DocList from '../components/DocList';
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  // Using a numeric trigger to force DocList to re-fetch when an upload completes
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleUploadSuccess = (data) => {
+    console.log('Upload success:', data);
+    setRefreshTrigger(prev => prev + 1); // Triggers re-fetch
   };
 
   return (
@@ -41,11 +50,9 @@ const Dashboard = () => {
       </div>
       
       {/* Main Content Area */}
-      <div className="glass-panel" style={{ padding: '60px 40px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2rem', marginBottom: '15px' }}>Dashboard Area</h2>
-        <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>
-          We will build the PDF Upload Zone and Document List here in Phase 3.
-        </p>
+      <div style={{ marginTop: '20px' }}>
+        <UploadZone onUploadSuccess={handleUploadSuccess} />
+        <DocList refreshTrigger={refreshTrigger} />
       </div>
     </div>
   );
