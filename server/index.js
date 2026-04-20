@@ -51,6 +51,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/documents', require('./routes/documents'));
+app.use('/api/query', require('./routes/query'));
 
 // ===================================
 // HEALTH CHECK ROUTE

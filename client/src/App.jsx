@@ -4,6 +4,7 @@ import { AuthContext } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import DocViewer from './pages/DocViewer';
 
 // A wrapper component for routes that require the user to be logged in
 const ProtectedRoute = ({ children }) => {
@@ -39,6 +40,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/document/:id" 
+          element={
+            <ProtectedRoute>
+              <DocViewer />
             </ProtectedRoute>
           } 
         />

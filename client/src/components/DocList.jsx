@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const DocList = ({ refreshTrigger }) => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   // Re-fetch documents whenever refreshTrigger changes (e.g., after an upload)
   useEffect(() => {
@@ -38,7 +40,7 @@ const DocList = ({ refreshTrigger }) => {
       <h3 style={{ marginBottom: '15px', fontSize: '1.4rem', color: '#f8fafc' }}>Your Documents</h3>
       
       {documents.map((doc) => (
-        <div key={doc._id} className="glass-panel" style={{ 
+        <div key={doc._id} className="glass-panel" onClick={() => navigate(`/document/${doc._id}`)} style={{ 
           padding: '24px', 
           display: 'flex', 
           justifyContent: 'space-between',
