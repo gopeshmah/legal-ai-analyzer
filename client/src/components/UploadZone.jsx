@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
+import API_BASE from '../config/api';
 
 const UploadZone = ({ onUploadSuccess }) => {
   const [isUploading, setIsUploading] = useState(false);
@@ -23,7 +24,7 @@ const UploadZone = ({ onUploadSuccess }) => {
 
     try {
       // Axios auto-attaches our JWT from AuthContext defaults
-      const response = await axios.post('http://localhost:5000/api/upload', formData, {
+      const response = await axios.post(`${API_BASE}/api/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       

@@ -1,4 +1,5 @@
 const Document = require('../models/Document');
+const { deleteByDocId } = require('../services/vectorStore');
 
 const getDocuments = async (req, res) => {
   try {
@@ -11,6 +12,40 @@ const getDocuments = async (req, res) => {
   }
 };
 
+const deleteDocument = async (req, res) => {
+  try {
+    const docId = req.params.id;
+
+    // Find the document and verify it belongs to the logged-in user
+    const doc = await Document.findById(docId);
+
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    if (doc.userId.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized to delete this document' });
+    }
+
+    // 1. Delete vectors from Pinecone (clean up AI data)
+    try {
+      await deleteByDocId(docId);
+    } catch (pineconeError) {
+      console.error('Pinecone cleanup failed (continuing with DB delete):', pineconeError);
+      // We still proceed to delete from MongoDB even if Pinecone fails
+    }
+
+    // 2. Delete the document record from MongoDB
+    await Document.findByIdAndDelete(docId);
+
+    res.status(200).json({ message: 'Document deleted successfully' });
+  } catch (error) {
+    console.error('Delete Document Error:', error);
+    res.status(500).json({ error: 'Failed to delete document' });
+  }
+};
+
 module.exports = {
-  getDocuments
+  getDocuments,
+  deleteDocument
 };

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import API_BASE from '../config/api';
 
 const ChatWindow = ({ documentId }) => {
   const [messages, setMessages] = useState([
@@ -25,7 +26,7 @@ const ChatWindow = ({ documentId }) => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/query', {
+      const response = await axios.post(`${API_BASE}/api/query`, {
         documentId,
         question: userMessage
       });

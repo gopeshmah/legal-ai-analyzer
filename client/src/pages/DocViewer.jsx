@@ -1,18 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 import ChatWindow from '../components/ChatWindow';
+import API_BASE from '../config/api';
 
 const DocViewer = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { loading: authLoading } = useContext(AuthContext);
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Wait until auth is fully loaded before fetching (fixes race condition)
   useEffect(() => {
+    if (authLoading) return; // Don't fetch until token is restored from localStorage
+
     const fetchDoc = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/documents');
+        const { data } = await axios.get(`${API_BASE}/api/documents`);
         const doc = data.find(d => d._id === id);
         if (doc) setDocument(doc);
       } catch (err) {
@@ -22,9 +28,9 @@ const DocViewer = () => {
       }
     };
     fetchDoc();
-  }, [id]);
+  }, [id, authLoading]);
 
-  if (loading) return <div style={{ padding: '40px', color: '#f8fafc' }}>Loading document context...</div>;
+  if (loading || authLoading) return <div style={{ padding: '40px', color: '#f8fafc' }}>Loading document context...</div>;
 
   if (!document) {
     return (

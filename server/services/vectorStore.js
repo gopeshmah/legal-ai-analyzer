@@ -56,7 +56,29 @@ const queryByDocId = async (docId, queryVector, topK = 5) => {
   }
 };
 
+const deleteByDocId = async (docId) => {
+  try {
+    const pc = initPinecone();
+    const index = pc.index(process.env.PINECONE_INDEX);
+
+    // List all vector IDs that belong to this document (they follow the pattern: docId-chunk-0, docId-chunk-1, etc.)
+    const listResponse = await index.listPaginated({ prefix: `${docId}-chunk-` });
+    
+    if (listResponse.vectors && listResponse.vectors.length > 0) {
+      const idsToDelete = listResponse.vectors.map(v => v.id);
+      await index.deleteMany(idsToDelete);
+      console.log(`🗑️ Deleted ${idsToDelete.length} vectors for doc ${docId}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Pinecone Delete Error:", error);
+    throw new Error("Failed to delete vectors from Pinecone");
+  }
+};
+
 module.exports = {
   upsertChunks,
-  queryByDocId
+  queryByDocId,
+  deleteByDocId
 };

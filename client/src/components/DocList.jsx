@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE from '../config/api';
 
 const DocList = ({ refreshTrigger }) => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
   // Re-fetch documents whenever refreshTrigger changes (e.g., after an upload)
@@ -15,12 +17,33 @@ const DocList = ({ refreshTrigger }) => {
 
   const fetchDocs = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/documents');
+      const { data } = await axios.get(`${API_BASE}/api/documents`);
       setDocuments(data);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to load documents');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (e, docId, fileName) => {
+    // Stop the click from navigating to DocViewer
+    e.stopPropagation();
+    
+    if (!window.confirm(`Delete "${fileName}"? This will permanently remove the document and all its AI data.`)) {
+      return;
+    }
+
+    setDeletingId(docId);
+    try {
+      await axios.delete(`${API_BASE}/api/documents/${docId}`);
+      // Remove from local state immediately for snappy UX
+      setDocuments(prev => prev.filter(doc => doc._id !== docId));
+    } catch (err) {
+      console.error('Delete failed:', err);
+      alert(err.response?.data?.error || 'Failed to delete document');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -66,7 +89,7 @@ const DocList = ({ refreshTrigger }) => {
               <span>Uploaded: {new Date(doc.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
-          <div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <span style={{ 
               padding: '6px 16px', 
               borderRadius: '20px', 
@@ -78,6 +101,34 @@ const DocList = ({ refreshTrigger }) => {
             }}>
               {doc.status.toUpperCase()}
             </span>
+            <button
+              onClick={(e) => handleDelete(e, doc._id, doc.fileName)}
+              disabled={deletingId === doc._id}
+              style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#f87171',
+                padding: '6px 14px',
+                borderRadius: '20px',
+                fontSize: '0.85rem',
+                fontWeight: '600',
+                cursor: deletingId === doc._id ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+                opacity: deletingId === doc._id ? 0.5 : 1
+              }}
+              onMouseEnter={(e) => {
+                if (deletingId !== doc._id) {
+                  e.target.style.background = 'rgba(239, 68, 68, 0.25)';
+                  e.target.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(239, 68, 68, 0.1)';
+                e.target.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+              }}
+            >
+              {deletingId === doc._id ? 'Deleting...' : 'Delete'}
+            </button>
           </div>
         </div>
       ))}
