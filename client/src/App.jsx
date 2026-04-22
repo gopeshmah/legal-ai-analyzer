@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -18,12 +19,32 @@ const ProtectedRoute = ({ children }) => {
     );
   }
   
-  // If not logged in, redirect them to the login page
+  // If not logged in, redirect them to the landing page
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
   
   // Otherwise, render the requested page (Dashboard, etc.)
+  return children;
+};
+
+// Redirect logged-in users away from public pages (landing, login, register)
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useContext(AuthContext);
+  
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <h2 style={{ color: '#8b5cf6' }}>Loading AI Analyzer...</h2>
+      </div>
+    );
+  }
+  
+  // If already logged in, send them to the dashboard
+  if (user) {
+    return <Navigate to="/dashboard" />;
+  }
+  
   return children;
 };
 
@@ -31,12 +52,26 @@ function App() {
   return (
     <div className="app-container">
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Public routes — redirect to dashboard if already logged in */}
+        <Route path="/" element={
+          <PublicRoute>
+            <Landing />
+          </PublicRoute>
+        } />
+        <Route path="/login" element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        } />
+        <Route path="/register" element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        } />
         
-        {/* All routes inside ProtectedRoute can only be accessed if logged in */}
+        {/* Protected routes — require authentication */}
         <Route 
-          path="/" 
+          path="/dashboard" 
           element={
             <ProtectedRoute>
               <Dashboard />

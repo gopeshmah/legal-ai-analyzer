@@ -1,6 +1,7 @@
 const { generateEmbeddings } = require('../services/embedder');
 const { queryByDocId } = require('../services/vectorStore');
 const { generateRagAnswer } = require('../services/gemini');
+const Document = require('../models/Document');
 
 const askQuestion = async (req, res) => {
   try {
@@ -11,7 +12,6 @@ const askQuestion = async (req, res) => {
     }
 
     // 1. Embed the question
-    // generateEmbeddings expects an array and returns an array of vectors
     const questionVectorArray = await generateEmbeddings([question]);
     const questionVector = questionVectorArray[0];
 
@@ -21,11 +21,6 @@ const askQuestion = async (req, res) => {
 
     // 2. Query Pinecone for top 5 most similar chunks
     const matches = await queryByDocId(documentId, questionVector, 5);
-
-    console.log("== QUERY LOG == ");
-    console.log("documentId passed:", documentId);
-    console.log("typeof documentId:", typeof documentId);
-    console.log("matches length:", matches ? matches.length : 'undefined');
     
     if (!matches || matches.length === 0) {
       return res.status(200).json({ 
@@ -40,6 +35,18 @@ const askQuestion = async (req, res) => {
     // 3. Send question and context chunks to Gemini to generate the answer
     const answer = await generateRagAnswer(question, contextChunks);
 
+    // 4. Save to chat history
+    await Document.findByIdAndUpdate(documentId, {
+      $push: {
+        chatHistory: {
+          $each: [
+            { role: 'user', text: question },
+            { role: 'assistant', text: answer, sources: contextChunks }
+          ]
+        }
+      }
+    });
+
     // Return the answer and the actual chunks used (for reference if needed)
     res.status(200).json({
       answer,
@@ -52,6 +59,23 @@ const askQuestion = async (req, res) => {
   }
 };
 
+const getChatHistory = async (req, res) => {
+  try {
+    const { documentId } = req.params;
+    
+    const doc = await Document.findOne({ _id: documentId, userId: req.user.id });
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    res.status(200).json(doc.chatHistory || []);
+  } catch (error) {
+    console.error('Fetch Chat History Error:', error);
+    res.status(500).json({ error: 'Failed to fetch chat history' });
+  }
+};
+
 module.exports = {
-  askQuestion
+  askQuestion,
+  getChatHistory
 };

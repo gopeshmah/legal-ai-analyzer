@@ -26,7 +26,13 @@ const documentSchema = new mongoose.Schema({
   chunkCount: { 
     type: Number, 
     default: 0 
-  }
+  },
+  chatHistory: [{
+    role: { type: String, enum: ['user', 'assistant'] },
+    text: { type: String },
+    sources: [String],
+    createdAt: { type: Date, default: Date.now }
+  }]
 }, {
   timestamps: true
 });

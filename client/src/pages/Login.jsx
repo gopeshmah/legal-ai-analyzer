@@ -19,7 +19,7 @@ const Login = () => {
     const result = await login(email, password);
     
     if (result.success) {
-      navigate('/');
+      navigate('/dashboard');
     } else {
       setError(result.message);
       setIsSubmitting(false);
@@ -27,17 +27,17 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container glass-panel">
-      <div className="auth-header">
-        <h2>Welcome Back</h2>
-        <p>Log in to access your legal documents</p>
+    <div className="glass-panel max-w-[450px] mx-auto mt-[10vh] p-10">
+      <div className="text-center mb-7">
+        <h2 className="text-3xl font-bold mb-2 gradient-text">Welcome Back</h2>
+        <p className="text-slate-400 text-[0.95rem]">Log in to access your legal documents</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Email Address</label>
+        <div className="mb-5">
+          <label className="block mb-2 text-sm text-slate-300 font-medium">Email Address</label>
           <input 
             type="email" 
             className="input-field"
@@ -48,8 +48,8 @@ const Login = () => {
           />
         </div>
         
-        <div className="form-group">
-          <label>Password</label>
+        <div className="mb-5">
+          <label className="block mb-2 text-sm text-slate-300 font-medium">Password</label>
           <input 
             type="password" 
             className="input-field"
@@ -65,8 +65,8 @@ const Login = () => {
         </button>
       </form>
       
-      <p style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8' }}>
-        Don't have an account? <Link to="/register" className="link-text">Sign up</Link>
+      <p className="text-center mt-5 text-slate-400">
+        Don't have an account? <Link to="/register" className="text-violet-primary no-underline font-semibold hover:text-violet-light transition-colors duration-200">Sign up</Link>
       </p>
     </div>
   );

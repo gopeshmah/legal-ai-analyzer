@@ -5,168 +5,132 @@ const Landing = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Trigger entrance animations
     setIsVisible(true);
   }, []);
 
   return (
-    <div className="landing-page">
+    <div className="relative overflow-hidden min-h-screen">
       {/* Animated background orbs */}
-      <div className="landing-orb landing-orb-1"></div>
-      <div className="landing-orb landing-orb-2"></div>
-      <div className="landing-orb landing-orb-3"></div>
+      <div className="fixed w-[500px] h-[500px] rounded-full bg-violet-primary blur-[80px] opacity-15 pointer-events-none -top-24 -right-24 animate-float z-0"></div>
+      <div className="fixed w-[400px] h-[400px] rounded-full bg-violet-secondary blur-[80px] opacity-15 pointer-events-none -bottom-12 -left-24 animate-float-reverse z-0"></div>
+      <div className="fixed w-[300px] h-[300px] rounded-full bg-sky-accent blur-[80px] opacity-15 pointer-events-none top-1/2 left-1/2 animate-float-delayed z-0"></div>
 
       {/* Navigation */}
-      <nav className="landing-nav">
-        <div className="landing-nav-brand">
-          <span className="landing-logo-icon">⚖️</span>
-          <span className="landing-logo-text">Legal AI Analyzer</span>
+      <nav className="relative z-10 flex justify-between items-center px-6 md:px-15 py-5 max-w-[1400px] mx-auto">
+        <div className="flex items-center gap-2.5">
+          <span className="text-2xl">⚖️</span>
+          <span className="text-xl font-bold gradient-text">Legal AI Analyzer</span>
         </div>
-        <div className="landing-nav-links">
-          <Link to="/login" className="landing-btn-ghost">Log In</Link>
-          <Link to="/register" className="landing-btn-cta">Get Started Free</Link>
+        <div className="flex gap-3 items-center">
+          <Link to="/login" className="px-5 py-2.5 rounded-lg border border-white/15 text-slate-300 no-underline font-medium text-[0.95rem] transition-all duration-300 hover:border-violet-primary/50 hover:text-white hover:bg-violet-primary/[0.08]">
+            Log In
+          </Link>
+          <Link to="/register" className="px-6 py-2.5 rounded-lg text-white no-underline font-semibold text-[0.95rem] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(99,102,241,0.4)]" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
+            Get Started Free
+          </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className={`landing-hero ${isVisible ? 'landing-fade-in' : ''}`}>
-        <div className="landing-hero-badge">
-          <span className="landing-badge-dot"></span>
+      <section className={`relative z-5 text-center max-w-[850px] mx-auto pt-20 pb-15 px-10 transition-all duration-800 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}>
+        <div className="inline-flex items-center gap-2 px-4.5 py-2 rounded-full bg-violet-primary/10 border border-violet-primary/25 text-violet-light text-[0.85rem] font-medium mb-7">
+          <span className="w-1.5 h-1.5 rounded-full bg-violet-primary animate-pulse-dot"></span>
           Powered by Gemini AI + Pinecone Vector DB
         </div>
-        <h1 className="landing-hero-title">
+        <h1 className="text-4xl md:text-[3.5rem] font-extrabold leading-[1.15] text-slate-100 mb-6 tracking-tight">
           Understand Any Legal Document
-          <span className="landing-hero-gradient"> in Seconds</span>
+          <span className="gradient-text-hero"> in Seconds</span>
         </h1>
-        <p className="landing-hero-subtitle">
+        <p className="text-lg text-slate-400 leading-relaxed max-w-[700px] mx-auto mb-9">
           Upload your contracts, agreements, and legal PDFs. Our AI-powered RAG pipeline 
           analyzes every clause, identifies risks, and answers your questions with 
           pinpoint accuracy — backed by the actual document text.
         </p>
-        <div className="landing-hero-actions">
-          <Link to="/register" className="landing-btn-cta landing-btn-lg">
+        <div className="flex gap-4 justify-center flex-wrap">
+          <Link to="/register" className="px-8 py-3.5 rounded-lg text-white no-underline font-semibold text-[1.05rem] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(99,102,241,0.4)]" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
             Start Analyzing Documents →
           </Link>
-          <a href="#how-it-works" className="landing-btn-ghost landing-btn-lg">
+          <a href="#how-it-works" className="px-8 py-3.5 rounded-lg border border-white/15 text-slate-300 no-underline font-medium text-[1.05rem] transition-all duration-300 hover:border-violet-primary/50 hover:text-white hover:bg-violet-primary/[0.08]">
             See How It Works
           </a>
         </div>
 
         {/* Stats */}
-        <div className="landing-stats">
-          <div className="landing-stat">
-            <span className="landing-stat-number">3072</span>
-            <span className="landing-stat-label">Embedding Dimensions</span>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-5 md:gap-10 mt-15 p-7 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-3xl font-extrabold gradient-text-stat">3072</span>
+            <span className="text-[0.85rem] text-slate-500 font-medium">Embedding Dimensions</span>
           </div>
-          <div className="landing-stat-divider"></div>
-          <div className="landing-stat">
-            <span className="landing-stat-number">&lt;3s</span>
-            <span className="landing-stat-label">Query Response Time</span>
+          <div className="w-15 h-px md:w-px md:h-10 bg-white/10"></div>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-3xl font-extrabold gradient-text-stat">&lt;3s</span>
+            <span className="text-[0.85rem] text-slate-500 font-medium">Query Response Time</span>
           </div>
-          <div className="landing-stat-divider"></div>
-          <div className="landing-stat">
-            <span className="landing-stat-number">500+</span>
-            <span className="landing-stat-label">Words per Chunk</span>
+          <div className="w-15 h-px md:w-px md:h-10 bg-white/10"></div>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-3xl font-extrabold gradient-text-stat">500+</span>
+            <span className="text-[0.85rem] text-slate-500 font-medium">Words per Chunk</span>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className={`landing-features ${isVisible ? 'landing-slide-up' : ''}`}>
-        <h2 className="landing-section-title">Why Legal AI Analyzer?</h2>
-        <p className="landing-section-subtitle">
+      <section className={`relative z-5 max-w-[1200px] mx-auto py-20 px-6 md:px-10 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}>
+        <h2 className="text-center text-3xl md:text-4xl font-bold text-slate-100 mb-3">Why Legal AI Analyzer?</h2>
+        <p className="text-center text-slate-400 text-lg mb-12">
           Built with a production-grade RAG architecture — not a toy wrapper around ChatGPT.
         </p>
 
-        <div className="landing-features-grid">
-          <div className="landing-feature-card glass-panel">
-            <div className="landing-feature-icon">📄</div>
-            <h3>Smart PDF Processing</h3>
-            <p>Upload any legal PDF up to 10MB. Our parser extracts text with high fidelity, preserving document structure and legal terminology.</p>
-          </div>
-          
-          <div className="landing-feature-card glass-panel">
-            <div className="landing-feature-icon">🧩</div>
-            <h3>Intelligent Chunking</h3>
-            <p>Documents are split into 500-word chunks with 100-word overlap, ensuring no context is lost between sections — critical for legal analysis.</p>
-          </div>
-          
-          <div className="landing-feature-card glass-panel">
-            <div className="landing-feature-icon">🧠</div>
-            <h3>Vector Embeddings</h3>
-            <p>Each chunk is embedded into 3072-dimensional vectors using Gemini's embedding model and stored in Pinecone for lightning-fast semantic search.</p>
-          </div>
-          
-          <div className="landing-feature-card glass-panel">
-            <div className="landing-feature-icon">🎯</div>
-            <h3>Precise RAG Answers</h3>
-            <p>Questions are answered using ONLY the relevant document context — no hallucinations, no generic advice. Every answer is grounded in your document.</p>
-          </div>
-          
-          <div className="landing-feature-card glass-panel">
-            <div className="landing-feature-icon">🚨</div>
-            <h3>Risk Detection</h3>
-            <p>The AI automatically flags potential legal risks, obligations, and liabilities found in your documents with clear [RISK] tags.</p>
-          </div>
-          
-          <div className="landing-feature-card glass-panel">
-            <div className="landing-feature-icon">🔒</div>
-            <h3>Secure & Private</h3>
-            <p>JWT authentication, user-scoped documents, and encrypted data transfer. Your legal documents stay yours.</p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[
+            { icon: '📄', title: 'Smart PDF Processing', desc: 'Upload any legal PDF up to 10MB. Our parser extracts text with high fidelity, preserving document structure and legal terminology.' },
+            { icon: '🧩', title: 'Intelligent Chunking', desc: 'Documents are split into 500-word chunks with 100-word overlap, ensuring no context is lost between sections — critical for legal analysis.' },
+            { icon: '🧠', title: 'Vector Embeddings', desc: "Each chunk is embedded into 3072-dimensional vectors using Gemini's embedding model and stored in Pinecone for lightning-fast semantic search." },
+            { icon: '🎯', title: 'Precise RAG Answers', desc: 'Questions are answered using ONLY the relevant document context — no hallucinations, no generic advice. Every answer is grounded in your document.' },
+            { icon: '🚨', title: 'Risk Detection', desc: 'The AI automatically flags potential legal risks, obligations, and liabilities found in your documents with clear [RISK] tags.' },
+            { icon: '🔒', title: 'Secure & Private', desc: 'JWT authentication, user-scoped documents, and encrypted data transfer. Your legal documents stay yours.' },
+          ].map((feature) => (
+            <div key={feature.title} className="glass-panel p-8 transition-all duration-300 hover:-translate-y-1 hover:border-violet-primary/20 hover:shadow-[0_12px_40px_rgba(139,92,246,0.1)]">
+              <div className="text-3xl mb-4">{feature.icon}</div>
+              <h3 className="text-lg font-semibold text-slate-100 mb-2.5">{feature.title}</h3>
+              <p className="text-slate-400 text-[0.95rem] leading-relaxed">{feature.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="landing-how-it-works">
-        <h2 className="landing-section-title">How It Works</h2>
-        <p className="landing-section-subtitle">A production-grade RAG pipeline in 4 steps</p>
+      <section id="how-it-works" className="relative z-5 max-w-[800px] mx-auto py-20 px-6 md:px-10">
+        <h2 className="text-center text-3xl md:text-4xl font-bold text-slate-100 mb-3">How It Works</h2>
+        <p className="text-center text-slate-400 text-lg mb-12">A production-grade RAG pipeline in 4 steps</p>
 
-        <div className="landing-steps">
-          <div className="landing-step">
-            <div className="landing-step-number">01</div>
-            <div className="landing-step-content">
-              <h3>Upload Your PDF</h3>
-              <p>Drag & drop any legal document — contracts, NDAs, lease agreements, terms of service. The text is extracted in-memory using pdf-parse.</p>
+        <div className="flex flex-col">
+          {[
+            { num: '01', title: 'Upload Your PDF', desc: 'Drag & drop any legal document — contracts, NDAs, lease agreements, terms of service. The text is extracted in-memory using pdf-parse.' },
+            { num: '02', title: 'AI Chunks & Embeds', desc: "The document is split into overlapping semantic chunks. Each chunk is converted into a 3072-dimensional vector using Gemini's embedding API." },
+            { num: '03', title: 'Stored in Pinecone', desc: 'Vectors are upserted into a Pinecone index with document-level metadata, enabling filtered semantic search scoped to your specific document.' },
+            { num: '04', title: 'Ask Questions & Get Answers', desc: 'Your question is embedded and matched against the top-5 most relevant chunks. Gemini generates a precise answer using only the matched context.' },
+          ].map((step, idx) => (
+            <div key={step.num}>
+              <div className="flex gap-5 md:gap-7 items-start p-5 md:p-7 rounded-xl transition-all duration-300 hover:bg-white/[0.02]">
+                <span className="text-4xl md:text-5xl font-extrabold gradient-text-step leading-none min-w-[50px] md:min-w-[60px]">{step.num}</span>
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-100 mb-2">{step.title}</h3>
+                  <p className="text-slate-400 text-[0.95rem] leading-relaxed">{step.desc}</p>
+                </div>
+              </div>
+              {idx < 3 && (
+                <div className="w-0.5 h-6 ml-[38px] md:ml-[56px]" style={{ background: 'linear-gradient(180deg, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.05))' }}></div>
+              )}
             </div>
-          </div>
-
-          <div className="landing-step-connector"></div>
-
-          <div className="landing-step">
-            <div className="landing-step-number">02</div>
-            <div className="landing-step-content">
-              <h3>AI Chunks & Embeds</h3>
-              <p>The document is split into overlapping semantic chunks. Each chunk is converted into a 3072-dimensional vector using Gemini's embedding API.</p>
-            </div>
-          </div>
-
-          <div className="landing-step-connector"></div>
-
-          <div className="landing-step">
-            <div className="landing-step-number">03</div>
-            <div className="landing-step-content">
-              <h3>Stored in Pinecone</h3>
-              <p>Vectors are upserted into a Pinecone index with document-level metadata, enabling filtered semantic search scoped to your specific document.</p>
-            </div>
-          </div>
-
-          <div className="landing-step-connector"></div>
-
-          <div className="landing-step">
-            <div className="landing-step-number">04</div>
-            <div className="landing-step-content">
-              <h3>Ask Questions & Get Answers</h3>
-              <p>Your question is embedded and matched against the top-5 most relevant chunks. Gemini generates a precise answer using only the matched context.</p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Tech Stack Section */}
-      <section className="landing-tech-stack">
-        <h2 className="landing-section-title">Built With</h2>
-        <div className="landing-tech-grid">
+      <section className="relative z-5 max-w-[900px] mx-auto pt-15 pb-20 px-6 md:px-10">
+        <h2 className="text-center text-3xl md:text-4xl font-bold text-slate-100 mb-10">Built With</h2>
+        <div className="flex flex-wrap gap-3.5 justify-center">
           {[
             { name: 'React', desc: 'Frontend UI', color: '#61dafb' },
             { name: 'Node.js', desc: 'Backend Runtime', color: '#68a063' },
@@ -175,11 +139,11 @@ const Landing = () => {
             { name: 'Pinecone', desc: 'Vector Store', color: '#00b4d8' },
             { name: 'Gemini AI', desc: 'LLM + Embeddings', color: '#8b5cf6' },
           ].map((tech) => (
-            <div key={tech.name} className="landing-tech-pill">
-              <span className="landing-tech-dot" style={{ backgroundColor: tech.color }}></span>
+            <div key={tech.name} className="flex items-center gap-3 px-5 py-3 rounded-full bg-white/[0.03] border border-white/[0.08] transition-all duration-300 hover:border-white/15 hover:-translate-y-0.5 hover:bg-white/[0.05]">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: tech.color }}></span>
               <div>
-                <span className="landing-tech-name">{tech.name}</span>
-                <span className="landing-tech-desc">{tech.desc}</span>
+                <span className="font-semibold text-slate-200 text-[0.95rem] mr-1.5">{tech.name}</span>
+                <span className="text-slate-500 text-[0.85rem]">{tech.desc}</span>
               </div>
             </div>
           ))}
@@ -187,23 +151,23 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="landing-cta">
-        <div className="landing-cta-card glass-panel">
-          <h2>Ready to Analyze Your First Document?</h2>
-          <p>Sign up for free and upload your first legal PDF in under 30 seconds.</p>
-          <Link to="/register" className="landing-btn-cta landing-btn-lg">
+      <section className="relative z-5 max-w-[800px] mx-auto px-6 md:px-10 pb-20">
+        <div className="glass-panel text-center py-15 px-6 md:px-10" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.12) 100%)', borderColor: 'rgba(139, 92, 246, 0.2)' }}>
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-100 mb-3">Ready to Analyze Your First Document?</h2>
+          <p className="text-slate-400 text-lg mb-7">Sign up for free and upload your first legal PDF in under 30 seconds.</p>
+          <Link to="/register" className="inline-block px-8 py-3.5 rounded-lg text-white no-underline font-semibold text-[1.05rem] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(99,102,241,0.4)]" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
             Create Free Account →
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="landing-footer">
-        <div className="landing-footer-content">
+      <footer className="relative z-5 border-t border-white/[0.05] py-6 px-10">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-1 md:gap-2.5 text-slate-600 text-[0.85rem]">
           <span>⚖️ Legal AI Analyzer</span>
-          <span className="landing-footer-sep">·</span>
+          <span className="hidden md:inline">·</span>
           <span>Full-Stack RAG Application</span>
-          <span className="landing-footer-sep">·</span>
+          <span className="hidden md:inline">·</span>
           <span>Built with MERN + Gemini + Pinecone</span>
         </div>
       </footer>

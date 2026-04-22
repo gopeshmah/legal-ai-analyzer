@@ -4,12 +4,33 @@ import ReactMarkdown from 'react-markdown';
 import API_BASE from '../config/api';
 
 const ChatWindow = ({ documentId }) => {
-  const [messages, setMessages] = useState([
-    { role: 'assistant', text: 'Hello! I am ready to answer questions about this legal document. What would you like to know?' }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // Fetch chat history on mount
+  useEffect(() => {
+    if (!documentId) return;
+    
+    const fetchHistory = async () => {
+      try {
+        const { data } = await axios.get(`${API_BASE}/api/query/history/${documentId}`);
+        if (data && data.length > 0) {
+          setMessages(data);
+        } else {
+          // Default initial message
+          setMessages([
+            { role: 'assistant', text: 'Hello! I am ready to answer questions about this legal document. What would you like to know?' }
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load chat history", err);
+      }
+    };
+    
+    fetchHistory();
+  }, [documentId]);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -50,57 +71,45 @@ const ChatWindow = ({ documentId }) => {
   };
 
   return (
-    <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '600px' }}>
-      <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <h3 style={{ margin: 0, color: '#f8fafc' }}>AI Legal Analyst</h3>
+    <div className="glass-panel flex flex-col h-[600px]">
+      <div className="p-5 border-b border-white/10">
+        <h3 className="m-0 text-slate-100 font-semibold">AI Legal Analyst</h3>
       </div>
       
-      <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
         {messages.map((msg, idx) => (
-          <div key={idx} style={{ 
-            alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-            maxWidth: '80%',
-            backgroundColor: msg.role === 'user' ? '#8b5cf6' : 'rgba(255,255,255,0.05)',
-            padding: '12px 18px',
-            borderRadius: '12px',
-            color: '#f8fafc',
-            border: msg.role === 'assistant' ? '1px solid rgba(255,255,255,0.1)' : 'none'
-          }}>
+          <div key={idx} className={`max-w-[80%] px-4 py-3 rounded-xl text-slate-100
+            ${msg.role === 'user' 
+              ? 'self-end bg-violet-primary' 
+              : 'self-start bg-white/[0.05] border border-white/10'
+            }`}>
             {msg.role === 'user' ? (
               <div>{msg.text}</div>
             ) : (
-              <div className="markdown-body" style={{ lineHeight: '1.6' }}>
+              <div className="markdown-body leading-relaxed">
                 <ReactMarkdown>{processText(msg.text)}</ReactMarkdown>
               </div>
             )}
           </div>
         ))}
         {loading && (
-          <div style={{ alignSelf: 'flex-start', color: '#94a3b8', padding: '10px' }}>
+          <div className="self-start text-slate-400 p-2.5">
             <span>AI is analyzing the document...</span>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={handleSend} style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '10px' }}>
+      <form onSubmit={handleSend} className="p-5 border-t border-white/10 flex gap-2.5">
         <input 
           type="text" 
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question (e.g. Can the landlord terminate early?)..."
           disabled={loading}
-          style={{ 
-            flex: 1, 
-            padding: '12px 16px', 
-            borderRadius: '8px', 
-            border: '1px solid rgba(255,255,255,0.2)', 
-            backgroundColor: 'rgba(0,0,0,0.2)',
-            color: 'white',
-            outline: 'none'
-          }}
+          className="input-field flex-1"
         />
-        <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100px' }}>
+        <button type="submit" disabled={loading} className="btn-primary !w-[100px]">
           Send
         </button>
       </form>

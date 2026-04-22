@@ -1,34 +1,56 @@
 /**
- * Splits extracted text into smaller chunks with overlap.
- * This ensures that if a concept spans across two chunks, context isn't lost.
+ * Splits extracted text into semantic chunks while preserving paragraph/sentence boundaries.
+ * This ensures legal clauses are not split arbitrarily down the middle.
  * 
  * @param {String} text - Full document text
- * @param {Number} chunkSize - Number of words per chunk (default 500)
- * @param {Number} overlap - Number of overlapping words (default 100)
- * @returns {Array<String>} Array of text chunks
+ * @param {Number} maxWords - Max words per chunk (default 500)
+ * @param {Number} overlapWords - Overlap words (default 100)
+ * @returns {Array<String>} Array of semantic text chunks
  */
-const chunkText = (text, chunkSize = 500, overlap = 100) => {
+const chunkText = (text, maxWords = 500, overlapWords = 100) => {
   if (!text) return [];
 
-  // Split text into an array of words
-  const words = text.split(/\s+/);
+  // Attempt to split by paragraph first (\n\n)
+  const paragraphs = text.split(/\n\s*\n/);
   const chunks = [];
-
-  // If the document is small, return it as one single chunk
-  if (words.length <= chunkSize) {
-    return [text];
+  let currentWords = [];
+  
+  for (const paragraph of paragraphs) {
+    const paraWords = paragraph.split(/\s+/).filter(Boolean);
+    
+    // If adding this paragraph exceeds the max word limit...
+    if (currentWords.length + paraWords.length > maxWords && currentWords.length > 0) {
+      // Save the current chunk
+      chunks.push(currentWords.join(' '));
+      
+      // Overlap: take the last `overlapWords` from our current bucket to start the new chunk
+      const overlapSlice = currentWords.slice(-overlapWords);
+      currentWords = [...overlapSlice];
+    }
+    
+    // If a SINGLE paragraph is insanely large (more than maxWords), we must split it by sentences
+    if (paraWords.length > maxWords) {
+      // Regex splits on punctuation marks keeping the punctuation attached to the sentence
+      const sentences = paragraph.match(/[^.!?]+[.!?]+/g) || [paragraph];
+      
+      for (const sentence of sentences) {
+        const sentenceWords = sentence.split(/\s+/).filter(Boolean);
+        
+        if (currentWords.length + sentenceWords.length > maxWords && currentWords.length > 0) {
+          chunks.push(currentWords.join(' '));
+          currentWords = currentWords.slice(-overlapWords);
+        }
+        currentWords.push(...sentenceWords);
+      }
+    } else {
+      // Normal paragraph fits nicely
+      currentWords.push(...paraWords);
+    }
   }
-
-  // Slide through the words array taking chunks
-  let i = 0;
-  while (i < words.length) {
-    // Slice a chunk of exactly chunkSize words
-    const chunkWords = words.slice(i, i + chunkSize);
-    chunks.push(chunkWords.join(' '));
-
-    // Move forward by (chunkSize - overlap)
-    // Example: 500 chunk size, 100 overlap -> move forward by 400
-    i += (chunkSize - overlap);
+  
+  // Push the final chunk
+  if (currentWords.length > 0) {
+    chunks.push(currentWords.join(' '));
   }
 
   return chunks;
