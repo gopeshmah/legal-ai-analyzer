@@ -27,11 +27,11 @@ const upsertChunks = async (docId, chunks, vectors) => {
       }
     }));
 
-    await index.upsert({ records: records });
+    await index.upsert({ records });
     return true;
   } catch (error) {
     console.error("Pinecone Upsert Error:", error);
-    throw new Error("Failed to store vectors in Pinecone");
+    throw error;
   }
 };
 

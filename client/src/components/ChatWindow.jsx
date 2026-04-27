@@ -50,6 +50,8 @@ const ChatWindow = ({ documentId }) => {
       const response = await axios.post(`${API_BASE}/api/query`, {
         documentId,
         question: userMessage
+      }, {
+        timeout: 120000 // 2 minute timeout for RAG pipeline
       });
 
       setMessages(prev => [...prev, { 

@@ -24,7 +24,8 @@ const UploadZone = ({ onUploadSuccess }) => {
 
     try {
       const response = await axios.post(`${API_BASE}/api/upload`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 300000 // 5 minute timeout for large PDFs (embedding can take a while)
       });
       
       setIsUploading(false);

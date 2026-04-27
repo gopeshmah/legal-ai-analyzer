@@ -1,0 +1,12 @@
+[2026-04-27T17:51:34.461Z] Embedding/Pinecone Error:
+Name: Error
+Message: Failed to store vectors in Pinecone
+Stack: Error: Failed to store vectors in Pinecone
+    at upsertChunks (C:\Users\samma\OneDrive\Desktop\AIproject\legal-ai-analyzer\server\services\vectorStore.js:34:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async uploadDocument (C:\Users\samma\OneDrive\Desktop\AIproject\legal-ai-analyzer\server\controllers\uploadController.js:36:7)
+Full error: {
+  "stack": "Error: Failed to store vectors in Pinecone\n    at upsertChunks (C:\\Users\\samma\\OneDrive\\Desktop\\AIproject\\legal-ai-analyzer\\server\\services\\vectorStore.js:34:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async uploadDocument (C:\\Users\\samma\\OneDrive\\Desktop\\AIproject\\legal-ai-analyzer\\server\\controllers\\uploadController.js:36:7)",
+  "message": "Failed to store vectors in Pinecone"
+}
+
