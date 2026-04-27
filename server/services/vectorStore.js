@@ -77,8 +77,38 @@ const deleteByDocId = async (docId) => {
   }
 };
 
+const fetchChunksByDocId = async (docId) => {
+  try {
+    const pc = initPinecone();
+    const index = pc.index(process.env.PINECONE_INDEX);
+
+    // List all vector IDs for this document
+    const listResponse = await index.listPaginated({ prefix: `${docId}-chunk-` });
+    
+    if (!listResponse.vectors || listResponse.vectors.length === 0) {
+      return [];
+    }
+
+    const ids = listResponse.vectors.map(v => v.id);
+    
+    // Fetch the full vectors with metadata (which contains the text)
+    const fetchResponse = await index.fetch(ids);
+    
+    // Extract text from metadata, sorted by chunk index
+    const chunks = Object.values(fetchResponse.records)
+      .sort((a, b) => a.metadata.chunkIndex - b.metadata.chunkIndex)
+      .map(record => record.metadata.text);
+
+    return chunks;
+  } catch (error) {
+    console.error("Pinecone Fetch Chunks Error:", error);
+    throw new Error("Failed to fetch chunks from Pinecone");
+  }
+};
+
 module.exports = {
   upsertChunks,
   queryByDocId,
-  deleteByDocId
+  deleteByDocId,
+  fetchChunksByDocId
 };

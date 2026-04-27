@@ -27,6 +27,10 @@ const documentSchema = new mongoose.Schema({
     type: Number, 
     default: 0 
   },
+  summary: {
+    type: String,
+    default: '' // Auto-generated TL;DR of the document
+  },
   chatHistory: [{
     role: { type: String, enum: ['user', 'assistant'] },
     text: { type: String },

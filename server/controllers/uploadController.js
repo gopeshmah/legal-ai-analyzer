@@ -3,6 +3,7 @@ const { parsePDF } = require('../services/pdfParser');
 const { chunkText } = require('../services/chunker');
 const { generateEmbeddings } = require('../services/embedder');
 const { upsertChunks } = require('../services/vectorStore');
+const { generateDocumentSummary } = require('../services/gemini');
 
 const uploadDocument = async (req, res) => {
   try {
@@ -34,8 +35,17 @@ const uploadDocument = async (req, res) => {
       const vectors = await generateEmbeddings(chunks);
       await upsertChunks(newDoc._id, chunks, vectors);
 
-      // If successful, mark as ready
+      // If embedding successful, generate a TL;DR summary
+      let summary = '';
+      try {
+        summary = await generateDocumentSummary(chunks);
+      } catch (summaryError) {
+        console.error('Summary generation failed (non-blocking):', summaryError);
+      }
+
+      // Mark as ready and save summary
       newDoc.status = 'ready';
+      newDoc.summary = summary;
       await newDoc.save();
     } catch (embedError) {
       console.error('Embedding/Pinecone Error:', embedError);

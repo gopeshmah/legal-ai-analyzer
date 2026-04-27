@@ -33,6 +33,42 @@ ANSWER:
   }
 };
 
+// Generate a short TL;DR summary of the document from its chunks
+const generateDocumentSummary = async (chunks) => {
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    // Use up to the first 5 chunks to keep it fast and cost-effective
+    const sampleText = chunks.slice(0, 5).join('\n\n---\n\n');
+
+    const prompt = `
+You are a legal document analyst. Read the following excerpts from a legal document and generate a concise summary.
+
+DOCUMENT EXCERPTS:
+${sampleText}
+
+INSTRUCTIONS:
+1. Write a 2-3 sentence summary of what this document is about (type of agreement, parties involved, key purpose).
+2. Follow with 3-5 bullet points of the most important terms, clauses, or obligations.
+3. Keep the entire summary under 200 words.
+4. Write in plain English that a non-lawyer can understand.
+5. Do NOT use markdown headers. Use bullet points (•) for the key points.
+
+SUMMARY:
+`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Gemini Summary Error:", error);
+    // Return a fallback — summary failure should NOT block the upload
+    return '';
+  }
+};
+
 module.exports = {
-  generateRagAnswer
+  generateRagAnswer,
+  generateDocumentSummary
 };

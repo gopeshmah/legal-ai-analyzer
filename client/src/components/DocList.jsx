@@ -74,6 +74,11 @@ const DocList = ({ refreshTrigger }) => {
               <span>{doc.chunkCount} AI Chunks</span>
               <span>Uploaded: {new Date(doc.createdAt).toLocaleDateString()}</span>
             </div>
+            {doc.summary && (
+              <p className="mt-2 text-slate-500 text-sm leading-relaxed line-clamp-2">
+                📝 {doc.summary.length > 120 ? doc.summary.substring(0, 120) + '...' : doc.summary}
+              </p>
+            )}
           </div>
           <div className="flex gap-3 items-center">
             <span className={`px-4 py-1.5 rounded-full text-[0.85rem] font-semibold border

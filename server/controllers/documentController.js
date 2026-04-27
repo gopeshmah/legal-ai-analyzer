@@ -1,5 +1,6 @@
 const Document = require('../models/Document');
-const { deleteByDocId } = require('../services/vectorStore');
+const { deleteByDocId, fetchChunksByDocId } = require('../services/vectorStore');
+const { generateDocumentSummary } = require('../services/gemini');
 
 const getDocuments = async (req, res) => {
   try {
@@ -45,7 +46,43 @@ const deleteDocument = async (req, res) => {
   }
 };
 
+// Generate (or regenerate) a summary for an existing document
+const generateSummary = async (req, res) => {
+  try {
+    const docId = req.params.id;
+
+    const doc = await Document.findById(docId);
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    if (doc.userId.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    // Fetch the text chunks from Pinecone
+    const chunks = await fetchChunksByDocId(docId);
+
+    if (!chunks || chunks.length === 0) {
+      return res.status(400).json({ error: 'No chunks found in Pinecone for this document' });
+    }
+
+    // Generate summary using Gemini
+    const summary = await generateDocumentSummary(chunks);
+
+    // Save to database
+    doc.summary = summary;
+    await doc.save();
+
+    res.status(200).json({ summary });
+  } catch (error) {
+    console.error('Generate Summary Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate summary' });
+  }
+};
+
 module.exports = {
   getDocuments,
-  deleteDocument
+  deleteDocument,
+  generateSummary
 };

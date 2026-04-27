@@ -1,6 +1,6 @@
 const express = require('express');
 const { protect } = require('../middleware/auth');
-const { getDocuments, deleteDocument } = require('../controllers/documentController');
+const { getDocuments, deleteDocument, generateSummary } = require('../controllers/documentController');
 
 const router = express.Router();
 
@@ -8,6 +8,11 @@ const router = express.Router();
 // @desc    Get all documents for the logged in user
 // @access  Private
 router.get('/', protect, getDocuments);
+
+// @route   POST /api/documents/:id/summary
+// @desc    Generate AI summary for an existing document
+// @access  Private
+router.post('/:id/summary', protect, generateSummary);
 
 // @route   DELETE /api/documents/:id
 // @desc    Delete a document and its Pinecone vectors

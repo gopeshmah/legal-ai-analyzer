@@ -11,6 +11,7 @@ const DocViewer = () => {
   const { loading: authLoading } = useContext(AuthContext);
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [summarizing, setSummarizing] = useState(false);
 
   // Wait until auth is fully loaded before fetching (fixes race condition)
   useEffect(() => {
@@ -29,6 +30,19 @@ const DocViewer = () => {
     };
     fetchDoc();
   }, [id, authLoading]);
+
+  const handleGenerateSummary = async () => {
+    setSummarizing(true);
+    try {
+      const { data } = await axios.post(`${API_BASE}/api/documents/${id}/summary`);
+      setDocument(prev => ({ ...prev, summary: data.summary }));
+    } catch (err) {
+      console.error('Summary generation failed:', err);
+      alert(err.response?.data?.error || 'Failed to generate summary');
+    } finally {
+      setSummarizing(false);
+    }
+  };
 
   if (loading || authLoading) {
     return <div className="p-10 text-slate-100">Loading document context...</div>;
@@ -81,6 +95,26 @@ const DocViewer = () => {
               <span>{new Date(document.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
+          
+          {/* Document Summary Section */}
+          {document.summary ? (
+            <div className="mt-5 p-4 rounded-lg bg-violet-primary/5 border border-violet-primary/20">
+              <h3 className="text-sm font-semibold text-violet-light mb-2 flex items-center gap-2">
+                📝 AI Summary
+              </h3>
+              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line m-0">
+                {document.summary}
+              </p>
+            </div>
+          ) : document.status === 'ready' && (
+            <button
+              onClick={handleGenerateSummary}
+              disabled={summarizing}
+              className="mt-5 w-full py-3 px-4 rounded-lg cursor-pointer font-semibold text-sm border transition-all duration-300 bg-violet-primary/10 text-violet-light border-violet-primary/30 hover:bg-violet-primary/20 hover:border-violet-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {summarizing ? '⏳ Generating Summary...' : '📝 Generate AI Summary'}
+            </button>
+          )}
           
           <div className="mt-5 p-4 rounded-lg bg-sky-400/10 border border-sky-400/20">
             <p className="text-sky-400 text-sm m-0">
