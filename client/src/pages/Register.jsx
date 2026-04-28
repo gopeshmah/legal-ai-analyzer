@@ -38,14 +38,14 @@ const Register = () => {
     <div className="glass-panel max-w-[450px] mx-auto mt-[10vh] p-10">
       <div className="text-center mb-7">
         <h2 className="text-3xl font-bold mb-2 gradient-text">Create Account</h2>
-        <p className="text-slate-400 text-[0.95rem]">Start analyzing legal documents with AI</p>
+        <p className="dark:text-slate-400 text-slate-500 text-[0.95rem]">Start analyzing legal documents with AI</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
       <form onSubmit={handleSubmit}>
         <div className="mb-5">
-          <label className="block mb-2 text-sm text-slate-300 font-medium">Full Name</label>
+          <label className="block mb-2 text-sm dark:text-slate-300 text-slate-700 font-medium">Full Name</label>
           <input 
             type="text" 
             className="input-field"
@@ -57,7 +57,7 @@ const Register = () => {
         </div>
 
         <div className="mb-5">
-          <label className="block mb-2 text-sm text-slate-300 font-medium">Email Address</label>
+          <label className="block mb-2 text-sm dark:text-slate-300 text-slate-700 font-medium">Email Address</label>
           <input 
             type="email" 
             className="input-field"
@@ -69,7 +69,7 @@ const Register = () => {
         </div>
         
         <div className="mb-5">
-          <label className="block mb-2 text-sm text-slate-300 font-medium">Password</label>
+          <label className="block mb-2 text-sm dark:text-slate-300 text-slate-700 font-medium">Password</label>
           <input 
             type="password" 
             className="input-field"
@@ -85,7 +85,7 @@ const Register = () => {
         </button>
       </form>
       
-      <p className="text-center mt-5 text-slate-400">
+      <p className="text-center mt-5 dark:text-slate-400 text-slate-600">
         Already have an account? <Link to="/login" className="text-violet-primary no-underline font-semibold hover:text-violet-light transition-colors duration-200">Log in</Link>
       </p>
     </div>

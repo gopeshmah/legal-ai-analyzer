@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ============================================ */
 /* Custom Theme & Animations                    */
 /* ============================================ */
@@ -20,6 +23,8 @@
   --animate-float-delayed: float 18s ease-in-out infinite 5s;
   --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
   --animate-gradient-shift: gradient-shift 4s ease infinite;
+  --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fade-in 0.3s ease-out forwards;
 }
 
 @keyframes float {
@@ -39,19 +44,54 @@
   50% { background-position: 100% 50%; }
 }
 
+@keyframes slide-up {
+  0% { transform: translateY(15px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 /* ============================================ */
 /* Global Styles                                */
 /* ============================================ */
 
 @layer base {
+  :root {
+    --bg-start: #f8fafc;
+    --bg-end: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    --input-bg: rgba(255, 255, 255, 0.8);
+    --input-border: rgba(0, 0, 0, 0.1);
+  }
+
+  :root.dark {
+    --bg-start: #0f172a;
+    --bg-end: #1e1b4b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --glass-bg: rgba(255, 255, 255, 0.02);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    --input-bg: rgba(0, 0, 0, 0.2);
+    --input-border: rgba(255, 255, 255, 0.1);
+  }
+
   * {
     font-family: var(--font-outfit);
   }
 
   body {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    color: #e2e8f0;
+    background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+    color: var(--text-primary);
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
@@ -62,8 +102,12 @@
 @layer components {
   /* Glassmorphism panel */
   .glass-panel {
-    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.05] rounded-2xl;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    background-color: var(--glass-bg);
+    border-color: var(--glass-border);
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: var(--glass-shadow);
+    @apply backdrop-blur-2xl rounded-2xl relative overflow-hidden transition-all duration-300;
   }
 
   /* Primary gradient button */
@@ -84,15 +128,15 @@
 
   /* Input fields */
   .input-field {
-    @apply w-full py-3 px-4 rounded-lg outline-none text-base text-white;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    @apply w-full py-3 px-4 rounded-lg outline-none text-base;
+    color: var(--text-primary);
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
     transition: all 0.3s ease;
   }
 
   .input-field:focus {
     border-color: #8b5cf6;
-    background: rgba(0, 0, 0, 0.3);
     box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
   }
 
@@ -171,16 +215,19 @@
   /* Custom minimal scrollbar for source viewer */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(139, 92, 246, 0.4);
+    background-color: rgba(139, 92, 246, 0.3);
     border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(139, 92, 246, 0.7);
+    background-color: rgba(139, 92, 246, 0.6);
   }
 }
 

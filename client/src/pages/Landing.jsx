@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import ThemeToggle from '../components/ThemeToggle';
 
 const Landing = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -21,8 +22,9 @@ const Landing = () => {
           <span className="text-2xl">⚖️</span>
           <span className="text-xl font-bold gradient-text">Legal AI Analyzer</span>
         </div>
-        <div className="flex gap-3 items-center">
-          <Link to="/login" className="px-5 py-2.5 rounded-lg border border-white/15 text-slate-300 no-underline font-medium text-[0.95rem] transition-all duration-300 hover:border-violet-primary/50 hover:text-white hover:bg-violet-primary/[0.08]">
+        <div className="flex gap-3 sm:gap-4 items-center">
+          <ThemeToggle />
+          <Link to="/login" className="hidden sm:block px-5 py-2.5 rounded-lg border dark:border-white/15 border-slate-300 dark:text-slate-300 text-slate-600 no-underline font-medium text-[0.95rem] transition-all duration-300 hover:border-violet-primary/50 dark:hover:text-white hover:text-violet-600 hover:bg-violet-primary/[0.08]">
             Log In
           </Link>
           <Link to="/register" className="px-6 py-2.5 rounded-lg text-white no-underline font-semibold text-[0.95rem] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(99,102,241,0.4)]" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
@@ -33,15 +35,15 @@ const Landing = () => {
 
       {/* Hero Section */}
       <section className={`relative z-5 text-center max-w-[850px] mx-auto pt-20 pb-15 px-10 transition-all duration-800 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}>
-        <div className="inline-flex items-center gap-2 px-4.5 py-2 rounded-full bg-violet-primary/10 border border-violet-primary/25 text-violet-light text-[0.85rem] font-medium mb-7">
+        <div className="inline-flex items-center gap-2 px-4.5 py-2 rounded-full dark:bg-violet-primary/10 bg-violet-primary/[0.05] border dark:border-violet-primary/25 border-violet-primary/20 text-violet-600 dark:text-violet-300 text-[0.85rem] font-medium mb-7">
           <span className="w-1.5 h-1.5 rounded-full bg-violet-primary animate-pulse-dot"></span>
           Powered by Gemini AI + Pinecone Vector DB
         </div>
-        <h1 className="text-4xl md:text-[3.5rem] font-extrabold leading-[1.15] text-slate-100 mb-6 tracking-tight">
+        <h1 className="text-4xl md:text-[3.5rem] font-extrabold leading-[1.15] dark:text-slate-100 text-slate-900 mb-6 tracking-tight">
           Understand Any Legal Document
           <span className="gradient-text-hero"> in Seconds</span>
         </h1>
-        <p className="text-lg text-slate-400 leading-relaxed max-w-[700px] mx-auto mb-9">
+        <p className="text-lg dark:text-slate-400 text-slate-600 leading-relaxed max-w-[700px] mx-auto mb-9">
           Upload your contracts, agreements, and legal PDFs. Our AI-powered RAG pipeline 
           analyzes every clause, identifies risks, and answers your questions with 
           pinpoint accuracy — backed by the actual document text.
@@ -50,23 +52,23 @@ const Landing = () => {
           <Link to="/register" className="px-8 py-3.5 rounded-lg text-white no-underline font-semibold text-[1.05rem] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(99,102,241,0.4)]" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
             Start Analyzing Documents →
           </Link>
-          <a href="#how-it-works" className="px-8 py-3.5 rounded-lg border border-white/15 text-slate-300 no-underline font-medium text-[1.05rem] transition-all duration-300 hover:border-violet-primary/50 hover:text-white hover:bg-violet-primary/[0.08]">
+          <a href="#how-it-works" className="px-8 py-3.5 rounded-lg border dark:border-white/15 border-slate-300 dark:text-slate-300 text-slate-600 no-underline font-medium text-[1.05rem] transition-all duration-300 hover:border-violet-primary/50 dark:hover:text-white hover:text-violet-600 hover:bg-violet-primary/[0.08]">
             See How It Works
           </a>
         </div>
 
         {/* Stats */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-5 md:gap-10 mt-15 p-7 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-5 md:gap-10 mt-15 p-7 rounded-2xl dark:bg-white/[0.02] bg-black/[0.02] border dark:border-white/[0.06] border-slate-200">
           <div className="flex flex-col items-center gap-1">
             <span className="text-3xl font-extrabold gradient-text-stat">3072</span>
             <span className="text-[0.85rem] text-slate-500 font-medium">Embedding Dimensions</span>
           </div>
-          <div className="w-15 h-px md:w-px md:h-10 bg-white/10"></div>
+          <div className="w-15 h-px md:w-px md:h-10 dark:bg-white/10 bg-slate-200"></div>
           <div className="flex flex-col items-center gap-1">
             <span className="text-3xl font-extrabold gradient-text-stat">&lt;3s</span>
             <span className="text-[0.85rem] text-slate-500 font-medium">Query Response Time</span>
           </div>
-          <div className="w-15 h-px md:w-px md:h-10 bg-white/10"></div>
+          <div className="w-15 h-px md:w-px md:h-10 dark:bg-white/10 bg-slate-200"></div>
           <div className="flex flex-col items-center gap-1">
             <span className="text-3xl font-extrabold gradient-text-stat">500+</span>
             <span className="text-[0.85rem] text-slate-500 font-medium">Words per Chunk</span>
@@ -76,8 +78,8 @@ const Landing = () => {
 
       {/* Features Section */}
       <section className={`relative z-5 max-w-[1200px] mx-auto py-20 px-6 md:px-10 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}>
-        <h2 className="text-center text-3xl md:text-4xl font-bold text-slate-100 mb-3">Why Legal AI Analyzer?</h2>
-        <p className="text-center text-slate-400 text-lg mb-12">
+        <h2 className="text-center text-3xl md:text-4xl font-bold dark:text-slate-100 text-slate-900 mb-3">Why Legal AI Analyzer?</h2>
+        <p className="text-center dark:text-slate-400 text-slate-600 text-lg mb-12">
           Built with a production-grade RAG architecture — not a toy wrapper around ChatGPT.
         </p>
 
@@ -92,8 +94,8 @@ const Landing = () => {
           ].map((feature) => (
             <div key={feature.title} className="glass-panel p-8 transition-all duration-300 hover:-translate-y-1 hover:border-violet-primary/20 hover:shadow-[0_12px_40px_rgba(139,92,246,0.1)]">
               <div className="text-3xl mb-4">{feature.icon}</div>
-              <h3 className="text-lg font-semibold text-slate-100 mb-2.5">{feature.title}</h3>
-              <p className="text-slate-400 text-[0.95rem] leading-relaxed">{feature.desc}</p>
+              <h3 className="text-lg font-semibold dark:text-slate-100 text-slate-800 mb-2.5">{feature.title}</h3>
+              <p className="dark:text-slate-400 text-slate-600 text-[0.95rem] leading-relaxed">{feature.desc}</p>
             </div>
           ))}
         </div>
@@ -101,8 +103,8 @@ const Landing = () => {
 
       {/* How It Works Section */}
       <section id="how-it-works" className="relative z-5 max-w-[800px] mx-auto py-20 px-6 md:px-10">
-        <h2 className="text-center text-3xl md:text-4xl font-bold text-slate-100 mb-3">How It Works</h2>
-        <p className="text-center text-slate-400 text-lg mb-12">A production-grade RAG pipeline in 4 steps</p>
+        <h2 className="text-center text-3xl md:text-4xl font-bold dark:text-slate-100 text-slate-900 mb-3">How It Works</h2>
+        <p className="text-center dark:text-slate-400 text-slate-600 text-lg mb-12">A production-grade RAG pipeline in 4 steps</p>
 
         <div className="flex flex-col">
           {[
@@ -115,8 +117,8 @@ const Landing = () => {
               <div className="flex gap-5 md:gap-7 items-start p-5 md:p-7 rounded-xl transition-all duration-300 hover:bg-white/[0.02]">
                 <span className="text-4xl md:text-5xl font-extrabold gradient-text-step leading-none min-w-[50px] md:min-w-[60px]">{step.num}</span>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-100 mb-2">{step.title}</h3>
-                  <p className="text-slate-400 text-[0.95rem] leading-relaxed">{step.desc}</p>
+                  <h3 className="text-xl font-semibold dark:text-slate-100 text-slate-800 mb-2">{step.title}</h3>
+                  <p className="dark:text-slate-400 text-slate-600 text-[0.95rem] leading-relaxed">{step.desc}</p>
                 </div>
               </div>
               {idx < 3 && (
@@ -129,7 +131,7 @@ const Landing = () => {
 
       {/* Tech Stack Section */}
       <section className="relative z-5 max-w-[900px] mx-auto pt-15 pb-20 px-6 md:px-10">
-        <h2 className="text-center text-3xl md:text-4xl font-bold text-slate-100 mb-10">Built With</h2>
+        <h2 className="text-center text-3xl md:text-4xl font-bold dark:text-slate-100 text-slate-900 mb-10">Built With</h2>
         <div className="flex flex-wrap gap-3.5 justify-center">
           {[
             { name: 'React', desc: 'Frontend UI', color: '#61dafb' },
@@ -139,11 +141,11 @@ const Landing = () => {
             { name: 'Pinecone', desc: 'Vector Store', color: '#00b4d8' },
             { name: 'Gemini AI', desc: 'LLM + Embeddings', color: '#8b5cf6' },
           ].map((tech) => (
-            <div key={tech.name} className="flex items-center gap-3 px-5 py-3 rounded-full bg-white/[0.03] border border-white/[0.08] transition-all duration-300 hover:border-white/15 hover:-translate-y-0.5 hover:bg-white/[0.05]">
+            <div key={tech.name} className="flex items-center gap-3 px-5 py-3 rounded-full dark:bg-white/[0.03] bg-black/[0.03] border dark:border-white/[0.08] border-black/[0.05] transition-all duration-300 hover:border-violet-primary/20 hover:-translate-y-0.5 hover:bg-violet-primary/[0.05]">
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: tech.color }}></span>
               <div>
-                <span className="font-semibold text-slate-200 text-[0.95rem] mr-1.5">{tech.name}</span>
-                <span className="text-slate-500 text-[0.85rem]">{tech.desc}</span>
+                <span className="font-semibold dark:text-slate-200 text-slate-800 text-[0.95rem] mr-1.5">{tech.name}</span>
+                <span className="dark:text-slate-500 text-slate-500 text-[0.85rem]">{tech.desc}</span>
               </div>
             </div>
           ))}
@@ -153,8 +155,8 @@ const Landing = () => {
       {/* CTA Section */}
       <section className="relative z-5 max-w-[800px] mx-auto px-6 md:px-10 pb-20">
         <div className="glass-panel text-center py-15 px-6 md:px-10" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.12) 100%)', borderColor: 'rgba(139, 92, 246, 0.2)' }}>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-100 mb-3">Ready to Analyze Your First Document?</h2>
-          <p className="text-slate-400 text-lg mb-7">Sign up for free and upload your first legal PDF in under 30 seconds.</p>
+          <h2 className="text-2xl md:text-3xl font-bold dark:text-slate-100 text-slate-900 mb-3">Ready to Analyze Your First Document?</h2>
+          <p className="dark:text-slate-400 text-slate-600 text-lg mb-7">Sign up for free and upload your first legal PDF in under 30 seconds.</p>
           <Link to="/register" className="inline-block px-8 py-3.5 rounded-lg text-white no-underline font-semibold text-[1.05rem] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(99,102,241,0.4)]" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
             Create Free Account →
           </Link>
@@ -162,7 +164,7 @@ const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-5 border-t border-white/[0.05] py-6 px-10">
+      <footer className="relative z-5 border-t dark:border-white/[0.05] border-slate-200 py-6 px-10">
         <div className="flex flex-col md:flex-row justify-center items-center gap-1 md:gap-2.5 text-slate-600 text-[0.85rem]">
           <span>⚖️ Legal AI Analyzer</span>
           <span className="hidden md:inline">·</span>

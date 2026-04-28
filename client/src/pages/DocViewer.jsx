@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import ChatWindow from '../components/ChatWindow';
+import ThemeToggle from '../components/ThemeToggle';
 import API_BASE from '../config/api';
 
 const DocViewer = () => {
@@ -63,46 +64,59 @@ const DocViewer = () => {
     <div className="p-6 md:p-10 max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-7">
       
       {/* Left Column: Doc Metadata */}
-      <div>
-        <button 
-          onClick={() => navigate('/dashboard')} 
-          className="bg-transparent border-none text-slate-400 cursor-pointer mb-5 text-base flex items-center gap-2 hover:text-violet-primary transition-colors duration-200">
-          ← Back to Dashboard
-        </button>
+      <div className="flex flex-col gap-6 animate-slide-up">
+        <div className="flex justify-between items-center w-full">
+          <button 
+            onClick={() => navigate('/dashboard')} 
+            className="bg-transparent border-none dark:text-slate-400 text-slate-500 cursor-pointer text-[0.95rem] font-medium flex items-center gap-2 hover:text-violet-primary transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Dashboard
+          </button>
+          <ThemeToggle />
+        </div>
         
-        <div className="glass-panel p-6">
-          <h2 className="text-xl font-bold text-slate-100 mb-2.5">{document.fileName}</h2>
+        <div className="glass-panel p-7">
+          <div className="flex items-start gap-3 mb-6">
+            <div className="p-3 dark:bg-violet-primary/20 bg-violet-primary/10 rounded-xl">
+              <svg className="w-6 h-6 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold dark:text-slate-100 text-slate-800 mb-1 leading-tight">{document.fileName}</h2>
+              <span className="dark:text-slate-400 text-slate-500 text-xs font-medium uppercase tracking-wider">Uploaded {new Date(document.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
           
-          <div className="flex flex-col gap-2.5 text-slate-400">
-            <div className="flex justify-between">
-              <span>Status:</span>
-              <span className={document.status === 'ready' ? 'text-green-400' : 'text-yellow-300'}>{document.status.toUpperCase()}</span>
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="dark:bg-white/[0.03] bg-black/[0.03] border dark:border-white/[0.05] border-black/[0.05] p-3 rounded-xl flex flex-col gap-1">
+              <span className="dark:text-slate-500 text-slate-400 text-[0.75rem] uppercase font-bold tracking-wider">Status</span>
+              <span className={`text-sm font-semibold flex items-center gap-1.5 ${document.status === 'ready' ? 'text-green-500 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}>
+                {document.status === 'ready' && <span className="w-1.5 h-1.5 rounded-full bg-green-500 dark:bg-green-400 dark:shadow-[0_0_8px_#4ade80]"></span>}
+                {document.status.toUpperCase()}
+              </span>
             </div>
-            <div className="flex justify-between">
-              <span>Pages:</span>
-              <span>{document.pageCount}</span>
+            <div className="dark:bg-white/[0.03] bg-black/[0.03] border dark:border-white/[0.05] border-black/[0.05] p-3 rounded-xl flex flex-col gap-1">
+              <span className="dark:text-slate-500 text-slate-400 text-[0.75rem] uppercase font-bold tracking-wider">File Size</span>
+              <span className="dark:text-slate-200 text-slate-700 text-sm font-semibold">{(document.fileSize / 1024 / 1024).toFixed(2)} MB</span>
             </div>
-            <div className="flex justify-between">
-              <span>Size:</span>
-              <span>{(document.fileSize / 1024 / 1024).toFixed(2)} MB</span>
+            <div className="dark:bg-white/[0.03] bg-black/[0.03] border dark:border-white/[0.05] border-black/[0.05] p-3 rounded-xl flex flex-col gap-1">
+              <span className="dark:text-slate-500 text-slate-400 text-[0.75rem] uppercase font-bold tracking-wider">Pages</span>
+              <span className="dark:text-slate-200 text-slate-700 text-sm font-semibold">{document.pageCount} Pages</span>
             </div>
-            <div className="flex justify-between">
-              <span>AI Chunks:</span>
-              <span>{document.chunkCount}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Uploaded:</span>
-              <span>{new Date(document.createdAt).toLocaleDateString()}</span>
+            <div className="dark:bg-white/[0.03] bg-black/[0.03] border dark:border-white/[0.05] border-black/[0.05] p-3 rounded-xl flex flex-col gap-1">
+              <span className="dark:text-slate-500 text-slate-400 text-[0.75rem] uppercase font-bold tracking-wider">AI Chunks</span>
+              <span className="dark:text-slate-200 text-slate-700 text-sm font-semibold">{document.chunkCount} Indexed</span>
             </div>
           </div>
           
           {/* Document Summary Section */}
           {document.summary ? (
-            <div className="mt-5 p-4 rounded-lg bg-violet-primary/5 border border-violet-primary/20">
-              <h3 className="text-sm font-semibold text-violet-light mb-2 flex items-center gap-2">
-                📝 AI Summary
+            <div className="p-5 rounded-2xl bg-gradient-to-br dark:from-violet-primary/10 from-violet-primary/5 dark:to-violet-secondary/5 to-white border dark:border-violet-primary/20 border-violet-primary/10 shadow-inner">
+              <h3 className="text-[0.85rem] font-bold text-violet-600 dark:text-violet-300 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Executive AI Summary
               </h3>
-              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line m-0">
+              <p className="dark:text-slate-300 text-slate-700 text-[0.95rem] leading-relaxed whitespace-pre-line m-0">
                 {document.summary}
               </p>
             </div>
@@ -110,15 +124,20 @@ const DocViewer = () => {
             <button
               onClick={handleGenerateSummary}
               disabled={summarizing}
-              className="mt-5 w-full py-3 px-4 rounded-lg cursor-pointer font-semibold text-sm border transition-all duration-300 bg-violet-primary/10 text-violet-light border-violet-primary/30 hover:bg-violet-primary/20 hover:border-violet-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 px-4 rounded-xl cursor-pointer font-bold text-sm transition-all duration-300 dark:bg-white/[0.03] bg-white text-violet-600 dark:text-violet-400 border dark:border-violet-primary/30 border-violet-primary/20 hover:bg-violet-primary/5 dark:hover:bg-violet-primary/10 hover:border-violet-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
             >
-              {summarizing ? '⏳ Generating Summary...' : '📝 Generate AI Summary'}
+              {summarizing ? (
+                <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Analyzing...</>
+              ) : (
+                <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg> Generate AI Insight Report</>
+              )}
             </button>
           )}
           
-          <div className="mt-5 p-4 rounded-lg bg-sky-400/10 border border-sky-400/20">
-            <p className="text-sky-400 text-sm m-0">
-              <strong>AI Ready:</strong> This document has been embedded and is stored securely in Pinecone. You can now chat with it below.
+          <div className="mt-6 p-4 rounded-xl dark:bg-sky-400/[0.08] bg-sky-500/[0.05] border dark:border-sky-400/20 border-sky-500/20 flex items-start gap-3">
+            <svg className="w-5 h-5 dark:text-sky-400 text-sky-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <p className="dark:text-sky-300/90 text-sky-800 text-sm m-0 leading-relaxed">
+              <strong>Vector Embedded.</strong> Document context is securely indexed in Pinecone. You can now interrogate the AI.
             </p>
           </div>
         </div>

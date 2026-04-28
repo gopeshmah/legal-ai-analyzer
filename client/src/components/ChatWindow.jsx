@@ -7,24 +7,36 @@ const SourceViewer = ({ sources }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="mt-4 border-t border-white/10 pt-3">
+    <div className="mt-5 pt-4 border-t border-white/[0.08]">
       <button 
         onClick={() => setExpanded(!expanded)}
-        className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors font-medium"
+        className="group flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-violet-300 transition-colors w-full"
       >
-        <svg className={`w-3 h-3 transform transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-        {expanded ? 'Hide Sources' : `View Sources (${sources.length})`}
+        <span className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:via-violet-primary/30 transition-all"></span>
+        <svg className={`w-3.5 h-3.5 transform transition-transform duration-300 ${expanded ? 'rotate-180 text-violet-400' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+        <span className="uppercase tracking-wider">{expanded ? 'Hide Evidence' : `View Evidence (${sources.length})`}</span>
+        <span className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:via-violet-primary/30 transition-all"></span>
       </button>
       
       {expanded && (
-        <div className="mt-3 flex flex-col gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+        <div className="mt-4 flex flex-col gap-3 max-h-[250px] overflow-y-auto custom-scrollbar pr-2 animate-fade-in">
           {sources.map((src, i) => {
             const sourceText = typeof src === 'string' ? src : src.text;
-            const pageNum = typeof src === 'object' && src.page ? `(Page ${src.page})` : '';
+            const pageNum = typeof src === 'object' && src.page ? `Page ${src.page}` : '';
             return (
-              <div key={i} className="text-xs text-slate-300 bg-black/30 p-3 rounded-lg border border-white/5">
-                <span className="text-violet-400 font-semibold mb-1 block">Source {i + 1} {pageNum}</span>
-                <p className="leading-relaxed opacity-80 whitespace-pre-wrap">{sourceText}</p>
+              <div key={i} className="group relative text-[13px] text-slate-300 bg-white/[0.02] hover:bg-white/[0.04] p-4 rounded-xl border border-white/[0.05] hover:border-violet-primary/20 transition-all shadow-inner">
+                <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/[0.05]">
+                  <span className="text-violet-400 font-semibold flex items-center gap-1.5">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Source {i + 1}
+                  </span>
+                  {pageNum && (
+                    <span className="px-2 py-0.5 bg-violet-primary/10 text-violet-300 rounded text-[10px] font-bold uppercase tracking-wide">
+                      {pageNum}
+                    </span>
+                  )}
+                </div>
+                <p className="leading-relaxed opacity-90 whitespace-pre-wrap">{sourceText}</p>
               </div>
             );
           })}
@@ -38,7 +50,7 @@ const ChatWindow = ({ documentId }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   // Fetch chat history on mount
   useEffect(() => {
@@ -63,9 +75,14 @@ const ChatWindow = ({ documentId }) => {
     fetchHistory();
   }, [documentId]);
 
-  // Auto-scroll to bottom of chat
+  // Auto-scroll to bottom of chat without scrolling the entire page
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages]);
 
   const quickPrompts = [
@@ -144,8 +161,8 @@ const ChatWindow = ({ documentId }) => {
 
   return (
     <div className="glass-panel flex flex-col h-[600px]">
-      <div className="p-5 border-b border-white/10 flex justify-between items-center">
-        <h3 className="m-0 text-slate-100 font-semibold">AI Legal Analyst</h3>
+      <div className="p-5 border-b dark:border-white/10 border-slate-200 flex justify-between items-center">
+        <h3 className="m-0 dark:text-slate-100 text-slate-800 font-semibold">AI Legal Analyst</h3>
         <button 
           onClick={handleExportPDF}
           className="text-xs bg-violet-primary/20 hover:bg-violet-primary/40 text-violet-300 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 border border-violet-primary/30"
@@ -156,17 +173,22 @@ const ChatWindow = ({ documentId }) => {
         </button>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
+      <div 
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-5 flex flex-col gap-4"
+      >
         {messages.map((msg, idx) => (
-          <div key={idx} className={`max-w-[80%] px-4 py-3 rounded-xl text-slate-100
+          <div key={idx} className={`max-w-[85%] px-5 py-4 rounded-2xl dark:text-slate-100 text-slate-800 shadow-sm animate-slide-up
             ${msg.role === 'user' 
-              ? 'self-end bg-violet-primary' 
-              : 'self-start bg-white/[0.05] border border-white/10'
-            }`}>
+              ? 'self-end bg-gradient-to-br from-violet-secondary to-violet-primary rounded-br-sm shadow-violet-primary/20 text-white' 
+              : 'self-start dark:bg-white/[0.04] bg-white border dark:border-white/10 border-slate-200 rounded-bl-sm backdrop-blur-md'
+            }`}
+            style={{ animationDelay: `${idx * 0.05}s` }}
+          >
             {msg.role === 'user' ? (
-              <div>{msg.text}</div>
+              <div className="text-[15px] font-medium leading-relaxed">{msg.text}</div>
             ) : (
-              <div className="markdown-body leading-relaxed">
+              <div className="markdown-body text-[15px] leading-relaxed">
                 <ReactMarkdown>{processText(msg.text)}</ReactMarkdown>
                 {msg.sources && msg.sources.length > 0 && (
                   <SourceViewer sources={msg.sources} />
@@ -176,11 +198,10 @@ const ChatWindow = ({ documentId }) => {
           </div>
         ))}
         {loading && (
-          <div className="self-start text-slate-400 p-2.5">
+          <div className="self-start dark:text-slate-400 text-slate-500 p-2.5">
             <span>AI is analyzing the document...</span>
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       <div className="px-5 pb-3 flex gap-2 overflow-x-auto custom-scrollbar flex-wrap pt-2">
@@ -190,7 +211,7 @@ const ChatWindow = ({ documentId }) => {
             type="button"
             disabled={loading}
             onClick={() => handleSend(null, prompt.query)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-violet-primary/20 border border-white/10 hover:border-violet-primary/50 rounded-full text-xs text-slate-200 transition-all whitespace-nowrap disabled:opacity-50 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 dark:bg-white/5 bg-slate-100 hover:bg-violet-primary/20 border dark:border-white/10 border-slate-200 hover:border-violet-primary/50 rounded-full text-xs dark:text-slate-200 text-slate-600 transition-all whitespace-nowrap disabled:opacity-50 cursor-pointer"
           >
             <span>{prompt.icon}</span>
             <span>{prompt.text}</span>
@@ -198,18 +219,24 @@ const ChatWindow = ({ documentId }) => {
         ))}
       </div>
 
-      <form onSubmit={(e) => handleSend(e)} className="px-5 pb-5 flex gap-2.5">
-        <input 
-          type="text" 
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question (e.g. Can the landlord terminate early?)..."
-          disabled={loading}
-          className="input-field flex-1"
-        />
-        <button type="submit" disabled={loading} className="btn-primary !w-[100px]">
-          Send
-        </button>
+      <form onSubmit={(e) => handleSend(e)} className="px-5 pb-5 mt-2 relative group">
+        <div className="relative flex items-center dark:bg-black/40 bg-white border dark:border-white/10 border-slate-200 rounded-[24px] p-1.5 focus-within:border-violet-primary/50 focus-within:ring-1 focus-within:ring-violet-primary/50 transition-all shadow-inner">
+          <input 
+            type="text" 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask a question about this document..."
+            disabled={loading}
+            className="flex-1 bg-transparent border-none outline-none px-4 py-2 text-sm dark:text-white text-slate-800 dark:placeholder-slate-400 placeholder-slate-500"
+          />
+          <button 
+            type="submit" 
+            disabled={loading || !input.trim()} 
+            className="bg-violet-primary hover:bg-violet-primary/90 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-violet-primary/20"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+        </div>
       </form>
     </div>
   );
