@@ -23,7 +23,7 @@ const parsePDF = async (pdfBuffer) => {
       // gemini-2.5-flash is extremely fast and handles document OCR natively
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
       
-      const prompt = "Please act as an OCR system. Transcribe all the text from this document exactly as it is written. Do not summarize or omit anything. Only return the transcribed text.";
+      const prompt = "Please act as an advanced OCR system. Transcribe all the text from this document exactly as it is written, preserving original paragraphs, line breaks, and bullet points. IMPORTANT: Do NOT include any page markers, page numbers, or annotations like '==Start of OCR==' or 'Page 1'. Only return the raw text.";
       
       const pdfPart = {
         inlineData: {
@@ -33,7 +33,9 @@ const parsePDF = async (pdfBuffer) => {
       };
       
       const result = await model.generateContent([prompt, pdfPart]);
-      cleanText = result.response.text();
+      cleanText = result.response.text()
+        .replace(/=+\s*(Start|End) of (OCR for )?page \d+\s*=+/gi, '')
+        .trim();
       
       console.log('✅ AI OCR transcription completed successfully!');
     }

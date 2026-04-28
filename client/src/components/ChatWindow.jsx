@@ -3,6 +3,33 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import API_BASE from '../config/api';
 
+const SourceViewer = ({ sources }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="mt-4 border-t border-white/10 pt-3">
+      <button 
+        onClick={() => setExpanded(!expanded)}
+        className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors font-medium"
+      >
+        <svg className={`w-3 h-3 transform transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+        {expanded ? 'Hide Sources' : `View Sources (${sources.length})`}
+      </button>
+      
+      {expanded && (
+        <div className="mt-3 flex flex-col gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+          {sources.map((src, i) => (
+            <div key={i} className="text-xs text-slate-300 bg-black/30 p-3 rounded-lg border border-white/5">
+              <span className="text-violet-400 font-semibold mb-1 block">Source {i + 1}</span>
+              <p className="leading-relaxed opacity-80">{src}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ChatWindow = ({ documentId }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -37,19 +64,27 @@ const ChatWindow = ({ documentId }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || !documentId) return;
+  const quickPrompts = [
+    { icon: '🚨', text: 'Identify Risks', query: 'What are the key risks, liabilities, and hidden fees in this document?' },
+    { icon: '📝', text: 'Key Obligations', query: 'Extract and summarize the key obligations and responsibilities of each party.' },
+    { icon: '❌', text: 'Termination Terms', query: 'Under what conditions can this agreement be terminated, and what are the penalties?' },
+    { icon: '📅', text: 'Key Dates', query: 'Extract all important dates, deadlines, and renewal periods mentioned in the text.' }
+  ];
 
-    const userMessage = input.trim();
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
-    setInput('');
+  const handleSend = async (e, predefinedQuery = null) => {
+    if (e) e.preventDefault();
+    
+    const queryToSend = predefinedQuery || input.trim();
+    if (!queryToSend || !documentId) return;
+
+    setMessages(prev => [...prev, { role: 'user', text: queryToSend }]);
+    if (!predefinedQuery) setInput('');
     setLoading(true);
 
     try {
       const response = await axios.post(`${API_BASE}/api/query`, {
         documentId,
-        question: userMessage
+        question: queryToSend
       }, {
         timeout: 120000 // 2 minute timeout for RAG pipeline
       });
@@ -90,6 +125,9 @@ const ChatWindow = ({ documentId }) => {
             ) : (
               <div className="markdown-body leading-relaxed">
                 <ReactMarkdown>{processText(msg.text)}</ReactMarkdown>
+                {msg.sources && msg.sources.length > 0 && (
+                  <SourceViewer sources={msg.sources} />
+                )}
               </div>
             )}
           </div>
@@ -102,7 +140,22 @@ const ChatWindow = ({ documentId }) => {
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={handleSend} className="p-5 border-t border-white/10 flex gap-2.5">
+      <div className="px-5 pb-3 flex gap-2 overflow-x-auto custom-scrollbar flex-wrap pt-2">
+        {quickPrompts.map((prompt, idx) => (
+          <button 
+            key={idx}
+            type="button"
+            disabled={loading}
+            onClick={() => handleSend(null, prompt.query)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-violet-primary/20 border border-white/10 hover:border-violet-primary/50 rounded-full text-xs text-slate-200 transition-all whitespace-nowrap disabled:opacity-50 cursor-pointer"
+          >
+            <span>{prompt.icon}</span>
+            <span>{prompt.text}</span>
+          </button>
+        ))}
+      </div>
+
+      <form onSubmit={(e) => handleSend(e)} className="px-5 pb-5 flex gap-2.5">
         <input 
           type="text" 
           value={input}
