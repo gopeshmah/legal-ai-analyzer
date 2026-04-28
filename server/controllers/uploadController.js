@@ -39,7 +39,8 @@ const uploadDocument = async (req, res) => {
 
     // Phase 4: Embed chunks and upsert to Pinecone
     try {
-      const vectors = await generateEmbeddings(chunks);
+      const chunkTexts = chunks.map(c => c.text);
+      const vectors = await generateEmbeddings(chunkTexts);
       await upsertChunks(newDoc._id, chunks, vectors);
 
       // If embedding successful, generate a TL;DR summary
@@ -87,7 +88,7 @@ const uploadDocument = async (req, res) => {
       documentId: newDoc._id,
       pageCount: newDoc.pageCount,
       chunkCount: newDoc.chunkCount,
-      firstChunkPreview: chunks[0].substring(0, 200) + '...' 
+      firstChunkPreview: chunks[0].text.substring(0, 200) + '...' 
     });
 
   } catch (error) {

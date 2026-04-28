@@ -29,8 +29,11 @@ const askQuestion = async (req, res) => {
       });
     }
 
-    // Extract the text content from the pinecone matches metadata
-    const contextChunks = matches.map(match => match.metadata.text);
+    // Extract the text content and page number from the pinecone matches metadata
+    const contextChunks = matches.map(match => ({
+      text: match.metadata.text,
+      page: match.metadata.page || 1
+    }));
 
     // 3. Send question and context chunks to Gemini to generate the answer
     const answer = await generateRagAnswer(question, contextChunks);

@@ -17,13 +17,14 @@ const upsertChunks = async (docId, chunks, vectors) => {
     const index = pc.index(process.env.PINECONE_INDEX);
 
     // Format for pinecone: array of { id, values, metadata }
-    const records = chunks.map((chunkText, i) => ({
+    const records = chunks.map((chunkObj, i) => ({
       id: `${docId}-chunk-${i}`,
       values: vectors[i],
       metadata: {
         docId: docId.toString(),
         chunkIndex: i,
-        text: chunkText
+        text: chunkObj.text,
+        page: chunkObj.page || 1
       }
     }));
 
@@ -94,10 +95,13 @@ const fetchChunksByDocId = async (docId) => {
     // Fetch the full vectors with metadata (which contains the text)
     const fetchResponse = await index.fetch(ids);
     
-    // Extract text from metadata, sorted by chunk index
+    // Extract text and page from metadata, sorted by chunk index
     const chunks = Object.values(fetchResponse.records)
       .sort((a, b) => a.metadata.chunkIndex - b.metadata.chunkIndex)
-      .map(record => record.metadata.text);
+      .map(record => ({
+        text: record.metadata.text,
+        page: record.metadata.page || 1
+      }));
 
     return chunks;
   } catch (error) {

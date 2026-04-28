@@ -6,11 +6,13 @@ const generateRagAnswer = async (question, contextChunks) => {
     // Use gemini-2.5-flash for fast and cost-effective text generation
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
+    const contextText = contextChunks.map(c => `[Page ${c.page}]:\n${c.text}`).join('\n\n---\n\n');
+
     const prompt = `
 You are a highly analytical legal assistant. Your task is to accurately answer the user's question based strictly on the provided document context.
 
 CONTEXT:
-${contextChunks.join('\n\n---\n\n')}
+${contextText}
 
 USER QUESTION:
 ${question}
@@ -20,6 +22,7 @@ INSTRUCTIONS:
 2. Be direct and clear. Use bullet points if applicable.
 3. If the context contains any potential legal risks, obligations, or liabilities related to the user's question, you must highlight them clearly using the EXACT tag [RISK] immediately before describing the risk. 
    Example: [RISK] The user is liable for damages if...
+4. IMPORTANT: You MUST cite the specific page number at the end of every bullet point or claim you make (e.g., "The contract renews automatically. (Page 5)").
 
 ANSWER:
 `;
@@ -40,7 +43,7 @@ const generateDocumentSummary = async (chunks) => {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // Use up to the first 5 chunks to keep it fast and cost-effective
-    const sampleText = chunks.slice(0, 5).join('\n\n---\n\n');
+    const sampleText = chunks.slice(0, 5).map(c => c.text).join('\n\n---\n\n');
 
     const prompt = `
 You are a legal document analyst. Read the following excerpts from a legal document and generate a concise summary.

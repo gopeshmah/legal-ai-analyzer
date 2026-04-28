@@ -18,12 +18,16 @@ const SourceViewer = ({ sources }) => {
       
       {expanded && (
         <div className="mt-3 flex flex-col gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
-          {sources.map((src, i) => (
-            <div key={i} className="text-xs text-slate-300 bg-black/30 p-3 rounded-lg border border-white/5">
-              <span className="text-violet-400 font-semibold mb-1 block">Source {i + 1}</span>
-              <p className="leading-relaxed opacity-80">{src}</p>
-            </div>
-          ))}
+          {sources.map((src, i) => {
+            const sourceText = typeof src === 'string' ? src : src.text;
+            const pageNum = typeof src === 'object' && src.page ? `(Page ${src.page})` : '';
+            return (
+              <div key={i} className="text-xs text-slate-300 bg-black/30 p-3 rounded-lg border border-white/5">
+                <span className="text-violet-400 font-semibold mb-1 block">Source {i + 1} {pageNum}</span>
+                <p className="leading-relaxed opacity-80 whitespace-pre-wrap">{sourceText}</p>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

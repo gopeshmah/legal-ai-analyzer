@@ -34,7 +34,7 @@ const documentSchema = new mongoose.Schema({
   chatHistory: [{
     role: { type: String, enum: ['user', 'assistant'] },
     text: { type: String },
-    sources: [String],
+    sources: [mongoose.Schema.Types.Mixed],
     createdAt: { type: Date, default: Date.now }
   }]
 }, {
