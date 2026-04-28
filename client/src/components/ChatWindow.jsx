@@ -111,10 +111,49 @@ const ChatWindow = ({ documentId }) => {
     return text.replaceAll('[RISK]', '> 🚨 **RISK DETECTED:**');
   };
 
+  const handleExportPDF = async () => {
+    try {
+      const response = await axios.get(`${API_BASE}/api/documents/${documentId}/export`, {
+        responseType: 'blob' // Important for receiving binary data
+      });
+
+      // Create a URL for the blob and trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Legal_Brief_${documentId.substring(0, 5)}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Export Error:", error);
+      let errorMsg = error.message;
+      if (error.response && error.response.data) {
+        if (error.response.data instanceof Blob) {
+          errorMsg = "Server returned an error blob";
+        } else {
+          errorMsg = JSON.stringify(error.response.data);
+        }
+      }
+      alert(`Export Failed: ${errorMsg}`);
+    }
+  };
+
   return (
     <div className="glass-panel flex flex-col h-[600px]">
-      <div className="p-5 border-b border-white/10">
+      <div className="p-5 border-b border-white/10 flex justify-between items-center">
         <h3 className="m-0 text-slate-100 font-semibold">AI Legal Analyst</h3>
+        <button 
+          onClick={handleExportPDF}
+          className="text-xs bg-violet-primary/20 hover:bg-violet-primary/40 text-violet-300 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 border border-violet-primary/30"
+          title="Export AI Summary and Chat History as PDF"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Export Brief
+        </button>
       </div>
       
       <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">

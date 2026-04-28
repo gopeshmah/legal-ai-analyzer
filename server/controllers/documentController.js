@@ -2,6 +2,8 @@ const Document = require('../models/Document');
 const { deleteByDocId, fetchChunksByDocId } = require('../services/vectorStore');
 const { generateDocumentSummary } = require('../services/gemini');
 
+const PDFDocument = require('pdfkit');
+
 const getDocuments = async (req, res) => {
   try {
     // Return all documents belonging to this user, newest first
@@ -81,8 +83,76 @@ const generateSummary = async (req, res) => {
   }
 };
 
+// Export the document summary and chat history as a PDF
+const exportDocumentPDF = async (req, res) => {
+  try {
+    const docId = req.params.id;
+
+    const doc = await Document.findById(docId);
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    if (doc.userId.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    // Initialize PDF document
+    const pdf = new PDFDocument({ margin: 50 });
+
+    // Set headers to trigger a download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="Legal_Brief_${doc.fileName}.pdf"`);
+
+    // Pipe the PDF directly to the response
+    pdf.pipe(res);
+
+    // Title
+    pdf.fontSize(24).font('Helvetica-Bold').text('AI Legal Brief', { align: 'center' });
+    pdf.moveDown();
+    pdf.fontSize(14).font('Helvetica').text(`Document: ${doc.fileName}`, { align: 'center' });
+    pdf.fontSize(10).text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'center' });
+    pdf.moveDown(2);
+
+    // Summary Section
+    if (doc.summary) {
+      pdf.fontSize(16).font('Helvetica-Bold').text('AI Document Summary');
+      pdf.moveDown(0.5);
+      pdf.fontSize(11).font('Helvetica').text(doc.summary, { align: 'justify' });
+      pdf.moveDown(2);
+    }
+
+    // Chat History Section
+    if (doc.chatHistory && doc.chatHistory.length > 0) {
+      pdf.fontSize(16).font('Helvetica-Bold').text('Q&A Analysis');
+      pdf.moveDown(1);
+
+      doc.chatHistory.forEach((msg) => {
+        if (msg.role === 'user') {
+          // Add a subtle background color for the user question (if possible, or just bold)
+          pdf.fontSize(12).font('Helvetica-Bold').fillColor('#4B0082').text(`Q: ${msg.text}`);
+          pdf.moveDown(0.5);
+        } else {
+          pdf.fontSize(11).font('Helvetica').fillColor('#000000').text(`A: ${msg.text.replace(/\*\*/g, '').replace(/\*/g, '')}`, { align: 'justify' });
+          pdf.moveDown(1);
+        }
+      });
+    }
+
+    // Finalize the PDF
+    pdf.end();
+  } catch (error) {
+    console.error('PDF Export Error:', error);
+    // Note: If headers are already sent, sending JSON will fail. But we catch early errors here.
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to generate PDF' });
+    }
+  }
+};
+
 module.exports = {
   getDocuments,
   deleteDocument,
-  generateSummary
+  generateSummary,
+  exportDocumentPDF
 };
